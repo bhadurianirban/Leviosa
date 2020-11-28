@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dgrf.cms.ui.terminstance;
+package org.leviosa.ui.terminstance;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -15,7 +15,7 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import org.leviosa.core.driver.CMSClientService;
 import org.hedwig.cms.dto.TermInstanceDTO;
-import org.dgrf.cms.ui.login.CMSClientAuthCredentialValue;
+import org.leviosa.ui.login.CMSClientAuthCredentialValue;
 import org.primefaces.validate.ClientValidator;
 
 /**

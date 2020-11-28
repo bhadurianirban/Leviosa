@@ -3,11 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dgrf.cms.browse;
+package org.leviosa.ui.terminstance;
 
-import org.dgrf.cms.ui.terminstance.TermMetaKeyLabels;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -24,29 +22,24 @@ import org.hedwig.cms.constants.CMSConstants;
 import org.hedwig.cms.dto.TermDTO;
 import org.hedwig.cms.dto.TermInstanceDTO;
 import org.hedwig.cms.dto.TermMetaDTO;
-import org.dgrf.cms.ui.login.CMSClientAuthCredentialValue;
+import org.leviosa.ui.login.CMSClientAuthCredentialValue;
 
 /**
  *
  * @author bhaduri
  */
-@Named(value = "rootTermInstanceList")
+@Named(value = "termInstanceList")
 @ViewScoped
-public class RootTermInstanceList implements Serializable {
+public class TermInstanceList implements Serializable {
 
     private String termSlug;
     private List<Map<String, Object>> screenTermInstanceList;
     private boolean metaDoesNotExistForTerm;
     private List<TermMetaKeyLabels> instanceMetaKeys;
     private String termName;
-    private Map<String, Object> selectedTermInstance;
+    private Map<String, Object> selectedMetaData;
 
-    private String parentTermSlug;
-    private String parentTermInstanceSlug;
-    private String childTermSlug;
-    private String childTermMetaKey;
-
-    public RootTermInstanceList() {
+    public TermInstanceList() {
     }
 
     @PostConstruct
@@ -77,59 +70,43 @@ public class RootTermInstanceList implements Serializable {
         termInstanceDTO = mts.getTermInstanceList(termInstanceDTO);
         screenTermInstanceList = termInstanceDTO.getTermInstanceList();
         metaDoesNotExistForTerm = !termScreenFields.isEmpty();
-        instanceMetaKeys = new ArrayList<>();
-
-        int gridColCount = 0;
-        for (Map<String, Object> termScreenField : termScreenFields) {
-
-            if ((Boolean) termScreenField.get("renderOnGrid")) {
-                if (gridColCount < 4) {
-                    TermMetaKeyLabels instanceColumns = new TermMetaKeyLabels();
-                    instanceColumns.setLabel((String) termScreenField.get("description"));
-                    instanceColumns.setMetaKey((String) termScreenField.get("metaKey") + "Desc");
-                    instanceMetaKeys.add(instanceColumns);
-                    gridColCount++;
-                }
-            }
-
-        }
+        instanceMetaKeys = TermInstanceUtil.prepareMetaKeyList(termScreenFields);
 
     }
 
-    public String browseTermInstance() {
-        CMSClientService mts = new CMSClientService();
-        TermMetaDTO termMetaDTO = new TermMetaDTO();
-        termMetaDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
-        String pts = (String) selectedTermInstance.get(CMSConstants.TERM_SLUG);
-        String ptis = (String) selectedTermInstance.get(CMSConstants.TERM_INSTANCE_SLUG);
-        termMetaDTO.setTermSlug(pts);
-        termMetaDTO = mts.getChildTermMetaList(termMetaDTO);
-        List<Map<String, Object>> termMetaListInMap;
-        if (termMetaDTO.getResponseCode() == HedwigResponseCode.SUCCESS) {
-            termMetaListInMap = termMetaDTO.getTermMetaFields();
+    public String goToEditTermInstance() {
+        return "TermInstanceEdit";
+    }
 
-            if (termMetaListInMap.size() == 1) {
-                Map<String, Object> selectedTermMetaObj = termMetaListInMap.get(0);
-                parentTermSlug = pts;
-                parentTermInstanceSlug = ptis;
-                childTermSlug = (String) selectedTermMetaObj.get(CMSConstants.TERM_SLUG);
-                childTermMetaKey = (String) selectedTermMetaObj.get(CMSConstants.META_KEY);
-                return "ChildTermInstanceList";
-            } else {
-                return "ChildTermList";
-            }
-        } else {
-            FacesMessage message;
-            String redirectUrl = "ChildTermInstanceList";
+    public String deleteTermMetaData() {
+        FacesMessage message;
+        CMSClientService mts = new CMSClientService();
+
+        String selectedTermInstanceSlug = (String) selectedMetaData.get("termInstanceSlug");
+        TermInstanceDTO termInstanceDTO = new TermInstanceDTO();
+        termInstanceDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
+        termInstanceDTO.setTermSlug(termSlug);
+        termInstanceDTO.setTermInstanceSlug(selectedTermInstanceSlug);
+
+        termInstanceDTO = mts.deleteTermInstance(termInstanceDTO);
+        if (termInstanceDTO.getResponseCode() == HedwigResponseCode.SUCCESS) {
             HedwigResponseMessage responseMessage = new HedwigResponseMessage();
-            message = new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", responseMessage.getResponseMessage(termMetaDTO.getResponseCode()));
+            message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", responseMessage.getResponseMessage(termInstanceDTO.getResponseCode()));
             FacesContext f = FacesContext.getCurrentInstance();
             f.getExternalContext().getFlash().setKeepMessages(true);
             f.addMessage(null, message);
-            return redirectUrl;
+        } else {
+            HedwigResponseMessage responseMessage = new HedwigResponseMessage();
+            message = new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", responseMessage.getResponseMessage(termInstanceDTO.getResponseCode()));
+            FacesContext f = FacesContext.getCurrentInstance();
+            f.getExternalContext().getFlash().setKeepMessages(true);
+            f.addMessage(null, message);
         }
 
+        return "TermInstanceList";
     }
+
+
 
     public String getTermSlug() {
         return termSlug;
@@ -155,6 +132,10 @@ public class RootTermInstanceList implements Serializable {
         this.termName = termName;
     }
 
+    public List<TermMetaKeyLabels> getInstanceColumnsList() {
+        return instanceMetaKeys;
+    }
+
     public List<TermMetaKeyLabels> getInstanceMetaKeys() {
         return instanceMetaKeys;
     }
@@ -163,13 +144,14 @@ public class RootTermInstanceList implements Serializable {
         this.instanceMetaKeys = instanceMetaKeys;
     }
 
-    public Map<String, Object> getSelectedTermInstance() {
-        return selectedTermInstance;
+    public Map<String, Object> getSelectedMetaData() {
+        return selectedMetaData;
     }
 
-    public void setSelectedTermInstance(Map<String, Object> selectedTermInstance) {
-        this.selectedTermInstance = selectedTermInstance;
+    public void setSelectedMetaData(Map<String, Object> selectedMetaData) {
+        this.selectedMetaData = selectedMetaData;
     }
+
 
     public boolean isMetaDoesNotExistForTerm() {
         return metaDoesNotExistForTerm;
@@ -177,38 +159,6 @@ public class RootTermInstanceList implements Serializable {
 
     public void setMetaDoesNotExistForTerm(boolean metaDoesNotExistForTerm) {
         this.metaDoesNotExistForTerm = metaDoesNotExistForTerm;
-    }
-
-    public String getParentTermSlug() {
-        return parentTermSlug;
-    }
-
-    public void setParentTermSlug(String parentTermSlug) {
-        this.parentTermSlug = parentTermSlug;
-    }
-
-    public String getParentTermInstanceSlug() {
-        return parentTermInstanceSlug;
-    }
-
-    public void setParentTermInstanceSlug(String parentTermInstanceSlug) {
-        this.parentTermInstanceSlug = parentTermInstanceSlug;
-    }
-
-    public String getChildTermSlug() {
-        return childTermSlug;
-    }
-
-    public void setChildTermSlug(String childTermSlug) {
-        this.childTermSlug = childTermSlug;
-    }
-
-    public String getChildTermMetaKey() {
-        return childTermMetaKey;
-    }
-
-    public void setChildTermMetaKey(String childTermMetaKey) {
-        this.childTermMetaKey = childTermMetaKey;
     }
 
 }

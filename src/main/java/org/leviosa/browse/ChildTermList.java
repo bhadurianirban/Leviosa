@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dgrf.cms.browse;
+package org.leviosa.browse;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.leviosa.core.driver.CMSClientService;
 import org.hedwig.cms.dto.TermDTO;
 import org.hedwig.cms.dto.TermInstanceDTO;
 import org.hedwig.cms.dto.TermMetaDTO;
-import org.dgrf.cms.ui.login.CMSClientAuthCredentialValue;
+import org.leviosa.ui.login.CMSClientAuthCredentialValue;
 
 /**
  *

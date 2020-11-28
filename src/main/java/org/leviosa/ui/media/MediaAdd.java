@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dgrf.cms.ui.media;
+package org.leviosa.ui.media;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -32,7 +32,7 @@ import org.hedwig.cms.dto.TermDTO;
 import org.hedwig.cms.dto.TermInstanceDTO;
 import org.hedwig.cms.constants.MediaMeta;
 import org.hedwig.cms.dto.TermMetaDTO;
-import org.dgrf.cms.ui.login.CMSClientAuthCredentialValue;
+import org.leviosa.ui.login.CMSClientAuthCredentialValue;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.extensions.model.fluidgrid.FluidGridItem;
 import org.primefaces.model.UploadedFile;

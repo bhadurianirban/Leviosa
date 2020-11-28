@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dgrf.cms.ui.terminstance;
+package org.leviosa.ui.terminstance;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -14,8 +14,9 @@ import javax.faces.convert.FacesConverter;
  *
  * @author bhaduri
  */
-@FacesConverter("fieldTimeConverter")
-public class FieldTimeConverter implements Converter {
+@FacesConverter("fieldDateConverter")
+public class FieldDateConverter implements Converter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
 //        Date formFieldDate;
@@ -38,5 +39,5 @@ public class FieldTimeConverter implements Converter {
 //        String formFieldDateToString = df.format(formFieldDate);
         return formFieldDate;
     }
-    
+
 }
