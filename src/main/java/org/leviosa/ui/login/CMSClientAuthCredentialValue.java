@@ -14,4 +14,5 @@ import org.hedwig.cloud.dto.HedwigAuthCredentials;
 public class CMSClientAuthCredentialValue {
     public static HedwigAuthCredentials AUTH_CREDENTIALS;
     
+    
 }

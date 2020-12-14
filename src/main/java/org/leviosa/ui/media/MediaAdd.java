@@ -25,12 +25,12 @@ import org.hedwig.cloud.response.HedwigResponseMessage;
 import org.leviosa.core.client.MediaClient;
 import org.leviosa.core.client.TermInstanceClient;
 
-import org.leviosa.core.driver.CMSClientService;
-import org.hedwig.cms.constants.CMSConstants;
+import org.leviosa.core.driver.LeviosaClientService;
+import org.hedwig.leviosa.constants.CMSConstants;
 import org.hedwig.cms.dto.MediaDTO;
 import org.hedwig.cms.dto.TermDTO;
 import org.hedwig.cms.dto.TermInstanceDTO;
-import org.hedwig.cms.constants.MediaMeta;
+import org.hedwig.leviosa.constants.MediaMeta;
 import org.hedwig.cms.dto.TermMetaDTO;
 import org.leviosa.ui.login.CMSClientAuthCredentialValue;
 import org.primefaces.event.FileUploadEvent;
@@ -69,16 +69,16 @@ public class MediaAdd implements Serializable {
     }
 
     public void creteTermForm() {
-        CMSClientService mts = new CMSClientService();
+        LeviosaClientService mts = new LeviosaClientService(CMSClientAuthCredentialValue.AUTH_CREDENTIALS.getHedwigServer(),CMSClientAuthCredentialValue.AUTH_CREDENTIALS.getHedwigServerPort());
         TermDTO termDTO = new TermDTO();
-        termDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
+        termDTO.setHedwigAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
         termDTO.setTermSlug(termSlug);
         termDTO = mts.getTermDetails(termDTO);
         termName = (String) termDTO.getTermDetails().get(CMSConstants.TERM_NAME);
 
         formItems = new ArrayList<>();
         TermMetaDTO termMetaDTO = new TermMetaDTO();
-        termMetaDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
+        termMetaDTO.setHedwigAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
         termMetaDTO.setTermSlug(termSlug);
         termMetaDTO = mts.getTermMetaList(termMetaDTO);
         termScreenFields = termMetaDTO.getTermMetaFields();
@@ -101,7 +101,7 @@ public class MediaAdd implements Serializable {
 //        }
         TermInstanceClient termInstanceClient = new TermInstanceClient();
         TermInstanceDTO termInstanceDTO = new TermInstanceDTO();
-        termInstanceDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
+        termInstanceDTO.setHedwigAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
 
         termInstanceDTO = termInstanceClient.createMediaTermInstance(termInstanceDTO);
         screenTermInstance = termInstanceDTO.getTermInstance();
@@ -156,7 +156,7 @@ public class MediaAdd implements Serializable {
         
         MediaDTO mediaDTO = new MediaDTO();
         
-        mediaDTO.setAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
+        mediaDTO.setHedwigAuthCredentials(CMSClientAuthCredentialValue.AUTH_CREDENTIALS);
         mediaDTO.setMediaFilePath(tempFilePath);
         mediaDTO.setMediaTermInstance(screenTermInstance);
         mediaDTO = mediaUploadClient.uploadMedia(mediaDTO);
