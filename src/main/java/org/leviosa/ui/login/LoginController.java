@@ -277,6 +277,10 @@ public class LoginController implements Serializable {
     }
     private void setAuthCredentials() {
         HedwigAuthCredentials authCredentials = new HedwigAuthCredentials();
+        String hedwigServer = context.getInitParameter("HedwigServerName");
+        String hedwigServerPort = context.getInitParameter("HedwigServerPort");
+        authCredentials.setHedwigServer(hedwigServer);
+        authCredentials.setHedwigServerPort(hedwigServerPort);
         authCredentials.setProductId(productID);
         authCredentials.setTenantId(tenantID);
         CMSClientAuthCredentialValue.AUTH_CREDENTIALS = authCredentials;
